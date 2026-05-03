@@ -1,18 +1,51 @@
-version: '3'
+version: '3.8'
+
 services:
+  # The FastAPI Application phase 1 https://fastapi.tiangolo.com/
   myapplication:
-    image: mongodb/mongodb-community-server:8.0-ubi8
+    build: .
+    ports:
+      - "8000:8000"
     environment:
-      - CONN_STR=mongodb://user:pass@mongodb
-    command: '/bin/bash -c "sleep 5; mongosh $$CONN_STR --eval \"show dbs;\""'
+      - DATABASE_URL=postgresql+psycopg://admin:rafdah@postgres_db:5432/inventory_db
+      - MONGO_URL=mongodb://user:rafdah@mongodb_db:27017/
     depends_on:
-      - mongodb
-  mongodb:
+      - postgres_db
+      - mongodb_db
+    networks:
+      - inventory_network
+
+  # The SQL Database (Postgres) phase 2 completion
+  postgres_db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=rafdah
+      - POSTGRES_DB=inventory_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - inventory_network
+
+  # The NoSQL Database (MongoDB) added for phase 2
+  mongodb_db:
     image: mongodb/mongodb-community-server:8.0-ubi8
     environment:
       - MONGO_INITDB_ROOT_USERNAME=user
       - MONGO_INITDB_ROOT_PASSWORD=rafdah
+    ports:
+      - "27017:27017"
     volumes:
-      - type: bind
-        source: ./data
-        target: /data/db
+      - mongo_data:/data/db
+    networks:
+      - inventory_network
+
+networks: #phase 2
+  inventory_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mongo_data:
