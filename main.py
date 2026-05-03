@@ -8,7 +8,8 @@ import datetime
 import models, database # From Phase 1 setup
 
 app = FastAPI()
-templates = Jinja2Templates(directory="screens") #required due to using Jinja within main_page.html (phase1) oh yeah and templates helps to find html files in the screens folder, so we can render them in our routes
+models.Base.metadata.create_all(bind=database.engine)
+templates = Jinja2Templates(directory="templates") #required due to using Jinja within main_page.html (phase1) oh yeah and templates helps to find html files in the screens folder, so we can render them in our routes
 models.Base.metadata.create_all(bind=database.engine)
 
 # MongoDB Connection for Logging
@@ -98,8 +99,12 @@ async def delete_item(item_id: str, db: Session = Depends(database.get_db)):
 
 @app.get("/", response_class=HTMLResponse)
 async def main_page(request: Request, db: Session = Depends(database.get_db)):
-    # all items --> db
     inventory_items = db.query(models.Item).all()
+
+    return templates.TemplateResponse(
+        request=request, 
+        name="index.html", 
+        context={"items": inventory_items}
+    )
     
-    # Sends to the main_page.html
-    return templates.TemplateResponse("main_page.html", {"request": request, "items": inventory_items})
+    

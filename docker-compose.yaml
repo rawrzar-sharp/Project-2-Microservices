@@ -1,11 +1,10 @@
-version: '3.8'
-
 services:
   # The FastAPI Application phase 1 https://fastapi.tiangolo.com/
   myapplication:
     build: .
     ports:
       - "8000:8000"
+    restart: on-failure
     environment:
       - DATABASE_URL=postgresql+psycopg://admin:rafdah@postgres_db:5432/inventory_db
       - MONGO_URL=mongodb://user:rafdah@mongodb_db:27017/
