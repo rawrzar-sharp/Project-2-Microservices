@@ -20,4 +20,5 @@ Result2: added database and dockerfile while adding multiple features for main.p
 Phase 4 Completed
 Issue(2/5/26): requires everything to be done to be runned.
 Result: Done.
+Issue(4/5/26): Not connecting the UI from the FastAPI UI (Error on adding data/Deleting/Etc.)
 -->

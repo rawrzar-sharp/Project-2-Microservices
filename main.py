@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, Request #helps in requesting as theres middlewear1, .... --> response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from fastapi import HTTPException # helps with error responses https://fastapi.tiangolo.com/tutorial/handling-errors/?h=fastapi+import+httpexception#reuse-fastapis-exception-handlers
@@ -103,8 +103,90 @@ async def main_page(request: Request, db: Session = Depends(database.get_db)):
 
     return templates.TemplateResponse(
         request=request, 
-        name="index.html", 
+        name="main_page.html", 
         context={"items": inventory_items}
     )
+
+# GET /create - Show create form
+@app.get("/create", response_class=HTMLResponse)
+async def create_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="create.html",
+        context={"item": None}
+    )
+
+# POST /create - Handle form submission for creating items
+@app.post("/create")
+async def create_item_form(request: Request, db: Session = Depends(database.get_db)):
+    try:
+        form_data = await request.form()
+        
+        new_item = models.Item(
+            short_name=form_data.get("short_name"),
+            description=form_data.get("description"),
+            price=int(form_data.get("price")),
+            amount=int(form_data.get("amount"))
+        )
+        db.add(new_item)
+        db.commit()
+        db.refresh(new_item)
+        
+        # Redirect to the newly created item's view page
+        return RedirectResponse(url=f"/view/{new_item.id}", status_code=303)
+    except Exception as e:
+        print(f"Error creating item: {e}")
+        raise HTTPException(status_code=500, detail=f"Error creating item: {str(e)}")
+
+# GET /view/{item_id} - Show item details
+@app.get("/view/{item_id}", response_class=HTMLResponse)
+async def view_item_page(request: Request, item_id: str, db: Session = Depends(database.get_db)):
+    item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="view.html",
+        context={"item": item}
+    )
+
+# GET /edit/{item_id} - Show edit form
+@app.get("/edit/{item_id}", response_class=HTMLResponse)
+async def edit_item_page(request: Request, item_id: str, db: Session = Depends(database.get_db)):
+    item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="create.html",
+        context={"item": item}
+    )
+
+# POST /edit/{item_id} - Handle form submission for updating items
+@app.post("/edit/{item_id}")
+async def update_item_form(request: Request, item_id: str, db: Session = Depends(database.get_db)):
+    try:
+        item = db.query(models.Item).filter(models.Item.id == item_id).first()
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
+        
+        form_data = await request.form()
+        
+        # Update the fields
+        item.short_name = form_data.get("short_name")
+        item.description = form_data.get("description")
+        item.price = int(form_data.get("price"))
+        item.amount = int(form_data.get("amount"))
+        
+        db.commit()
+        db.refresh(item)
+        
+        # Redirect to the item's view page
+        return RedirectResponse(url=f"/view/{item.id}", status_code=303)
+    except Exception as e:
+        print(f"Error updating item: {e}")
+        raise HTTPException(status_code=500, detail=f"Error updating item: {str(e)}")
     
     
