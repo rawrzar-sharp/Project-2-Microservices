@@ -1,24 +1,26 @@
+# Project 2: Microservices
 
-<!--Project-2-Microservices
-Phase 1 complete by 100%
-Issue(3/5/26): Confusion on how to do it based on the FlaskAPI
-Result: No issues yet confusion on terminal with multiple logs repeating errors
-Result2: Finished from 10am - 9pm (3rd of May 2026)
+## 📖 Overview
+[A brief description of what the application does. E.g., A microservices-based backend for a cafe management system / storage organization platform.]
 
+## 🏗️ Architecture
+This project utilizes a microservices architecture to ensure scalability and separation of concerns. 
 
-Phase 2 completed by adding python
-Issue: No python and Pip (took longer on installation)
-Result: Finished by installing everything (MongoDB + SQLAlchemy + Python + Pip + Dockerfile Configuration)
-Result2: From 2pm - 1am (2nd of May 2026)
+### Services
+*   **[Service 1 Name]** (e.g., `user-service`): Handles user authentication and management.
+*   **[Service 2 Name]** (e.g., `inventory-service`): Manages stock, items, or storage data.
+*   **[Service 3 Name]** (e.g., `order-service`): Processes transactions or organizational logic.
+*   **API Gateway**: Routes incoming requests to the appropriate microservice.
 
+## 🚀 Getting Started
 
-Phase 3 Complete by 100%
-Issue(2/5/26): adding sessionmaker, dockerfile empty, figuring out MongoDB via documentation
-Result: Finished from 6pm - 9pm (3rd of May 2026)
-Result2: added database and dockerfile while adding multiple features for main.py based on phase 1
+### Prerequisites
+*   Docker & Docker Compose
+*   Java / Node.js / Python (Depending on the stack)
+*   [Database used, e.g., PostgreSQL, MongoDB]
 
-Phase 4 Completed
-Issue(2/5/26): requires everything to be done to be runned.
-Result: Done.
-Issue(4/5/26): Not connecting the UI from the FastAPI UI (Error on adding data/Deleting/Etc.)
--->
+### Installation & Execution
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/rawrzar-sharp/Project-2-Microservices.git](https://github.com/rawrzar-sharp/Project-2-Microservices.git)
+   cd Project-2-Microservices
